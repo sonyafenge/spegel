@@ -1,5 +1,5 @@
 TAG = $$(git rev-parse --short HEAD)
-IMG ?= ghcr.io/xenitab/spegel:$(TAG)
+IMG ?= sonyali03/spegel:$(TAG)
 CNI ?= iptables
 
 lint:
