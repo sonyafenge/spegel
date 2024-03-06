@@ -207,7 +207,7 @@ func (r *Registry) handleMirror(c *gin.Context, key string) {
 	resolveCtx = logr.NewContext(resolveCtx, log)
 	isExternal := r.isExternalRequest(c)
 	if isExternal {
-		log.Info("handling mirror request from external node")
+		log.Info("handling sonayfenge mirror request from external node")
 	}
 	peerCh, err := r.router.Resolve(resolveCtx, key, isExternal, r.resolveRetries)
 	if err != nil {

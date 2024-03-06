@@ -543,7 +543,7 @@ func AddMirrorConfiguration(ctx context.Context, fs afero.Fs, configPath string,
 		if err != nil {
 			return err
 		}
-		log.Info("added containerd mirror configuration", "registry", registryURL.String(), "path", fp)
+		log.Info("added sonyafenge containerd mirror configuration", "registry", registryURL.String(), "path", fp)
 	}
 	return nil
 }
