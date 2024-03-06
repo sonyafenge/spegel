@@ -15,7 +15,7 @@ const (
 	KBps          = 1024 * Bps
 	MBps          = 1024 * KBps
 	GBps          = 1024 * MBps
-	TBps          = 1024 * GBps
+	TBps          = 1024 * MBps
 )
 
 func (br *Byterate) UnmarshalText(b []byte) error {
