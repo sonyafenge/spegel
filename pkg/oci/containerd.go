@@ -6,6 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	sonyalog "log"
 	"net/url"
 	"os"
 	"path"
@@ -306,7 +307,7 @@ func (c *Containerd) GetManifest(ctx context.Context, dgst digest.Digest) ([]byt
 }
 
 func (c *Containerd) CopyLayer(ctx context.Context, dgst digest.Digest, dst io.Writer) error {
-	log := logr.FromContextOrDiscard(ctx)
+	//log := logr.FromContextOrDiscard(ctx)
 	client, err := c.Client()
 	if err != nil {
 		return err
@@ -319,7 +320,7 @@ func (c *Containerd) CopyLayer(ctx context.Context, dgst digest.Digest, dst io.W
 
 	// Use a channel to signal the completion of the copy
 	done := make(chan error, 1)
-
+	sonyalog.Printf("SonyaLog: blob copy started")
 	// Start a goroutine to perform the copy
 	go func() {
 		startTime := time.Now()
@@ -327,9 +328,9 @@ func (c *Containerd) CopyLayer(ctx context.Context, dgst digest.Digest, dst io.W
 		duration := time.Since(startTime)
 
 		if err != nil {
-			log.Info("Blob io.copy failed: %v", err)
+			sonyalog.Printf("SonyaLog: Blob io.copy failed: %v", err)
 		} else {
-			log.Info("Blob io.copy completed in %s", duration)
+			sonyalog.Printf("SonyaLog: Blob io.copy completed in %s", duration)
 		}
 		done <- err // Send the result to the channel
 	}()
@@ -572,7 +573,7 @@ func AddMirrorConfiguration(ctx context.Context, fs afero.Fs, configPath string,
 		if err != nil {
 			return err
 		}
-		log.Info("added sonyafenge containerd mirror configuration", "registry", registryURL.String(), "path", fp)
+		log.Info("added containerd mirror configuration", "registry", registryURL.String(), "path", fp)
 	}
 	return nil
 }

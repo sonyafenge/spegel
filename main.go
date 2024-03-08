@@ -199,7 +199,7 @@ func registryCommand(ctx context.Context, args *RegistryCmd) (err error) {
 		return regSrv.Shutdown(shutdownCtx)
 	})
 
-	log.Info("running sonyafenge Spegel", "registry", args.RegistryAddr, "router", args.RouterAddr)
+	log.Info("running v0.1.1 Spegel", "registry", args.RegistryAddr, "router", args.RouterAddr)
 	err = g.Wait()
 	if err != nil {
 		return err

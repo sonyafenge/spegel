@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"io"
+	sonyalog "log"
 	"net/http"
 	"net/http/httputil"
 	"net/url"
@@ -188,6 +189,7 @@ func (r *Registry) registryHandler(c *gin.Context) {
 		r.handleManifest(c, dgst)
 		return
 	case referenceTypeBlob:
+		sonyalog.Printf("SonyaLog: HandleBlob started")
 		r.handleBlob(c, dgst)
 		return
 	}
