@@ -9,6 +9,7 @@ import (
 	"net/url"
 	"os"
 	"os/signal"
+	"runtime/pprof"
 	"syscall"
 	"time"
 
@@ -137,6 +138,25 @@ func registryCommand(ctx context.Context, args *RegistryCmd) (err error) {
 		}
 		return nil
 	})
+
+	// Start CPU profiling
+	cpuFile, err := os.Create("cpu.pprof")
+	if err != nil {
+		log.Info("Failed to create cpu.pprof with err:", err)
+	}
+	pprof.StartCPUProfile(cpuFile)
+	defer pprof.StopCPUProfile()
+
+	// Start memory profiling
+	memFile, err := os.Create("mem.pprof")
+	if err != nil {
+		log.Info("Failed to create mem.pprof with err::", err)
+	}
+	defer func() {
+		pprof.WriteHeapProfile(memFile)
+		memFile.Close()
+	}()
+
 	g.Go(func() error {
 		<-ctx.Done()
 		shutdownCtx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
@@ -199,7 +219,7 @@ func registryCommand(ctx context.Context, args *RegistryCmd) (err error) {
 		return regSrv.Shutdown(shutdownCtx)
 	})
 
-	log.Info("running v0.1.1 Spegel", "registry", args.RegistryAddr, "router", args.RouterAddr)
+	log.Info("running v0.1.2 Spegel", "registry", args.RegistryAddr, "router", args.RouterAddr)
 	err = g.Wait()
 	if err != nil {
 		return err
