@@ -306,7 +306,7 @@ func (c *Containerd) GetManifest(ctx context.Context, dgst digest.Digest) ([]byt
 	return b, mt, nil
 }
 
-func (c *Containerd) CopyLayer(ctx context.Context, dgst digest.Digest, dst io.Writer) error {
+func (c *Containerd) CopyLayer(ctx context.Context, dgst digest.Digest, dst io.Writer, bsize int) error {
 	//log := logr.FromContextOrDiscard(ctx)
 	client, err := c.Client()
 	if err != nil {
@@ -320,6 +320,7 @@ func (c *Containerd) CopyLayer(ctx context.Context, dgst digest.Digest, dst io.W
 
 	// Use a channel to signal the completion of the copy
 	done := make(chan error, 1)
+	sonyalog.Printf("SonyaLog: blob copy buffer size: %v", bsize)
 	sonyalog.Printf("SonyaLog: blob copy started")
 	// Start a goroutine to perform the copy
 	go func() {
@@ -329,8 +330,7 @@ func (c *Containerd) CopyLayer(ctx context.Context, dgst digest.Digest, dst io.W
 		//bufferSize := 262144 // Adjust the buffer size as needed (256KB)
 		//bufferSize := 4194304 // Adjust the buffer size as needed (4MB)
 		//bufferSize := 2097152 // Adjust the buffer size as needed (2MB)
-		bufferSize := 67108864 // Adjust the buffer size as needed (64MB)
-		buffer := make([]byte, bufferSize)
+		buffer := make([]byte, bsize)
 
 		wSize, err := io.CopyBuffer(dst, content.NewReader(ra), buffer)
 		duration := time.Since(startTime)
