@@ -1,12 +1,12 @@
 image:
   # -- Image repository.
-  repository: ghcr.io/xenitab/spegel
+  repository: sonyali03/spegel
   # -- Image Pull Policy.
   pullPolicy: IfNotPresent
   # -- Overrides the image tag whose default is the chart appVersion.
   tag: ""
   # -- Image digest.
-  digest: ""
+  digest: "sha256:93af0fe096d4d9caf44f390be52d35b13ff390b6b56bc880a3b765ff9d5ea698"
 
 
 # -- Image Pull Secrets
@@ -141,3 +141,5 @@ spegel:
   resolveLatestTag: true
   # -- Maximum write speed per request when serving blob layers. Should be an integer followed by unit Bps, KBps, MBps, GBps, or TBps.
   blobSpeed: ""
+  # -- IO copy buffer size (bytes) for blob.
+  blobCopyBuffer: 32768

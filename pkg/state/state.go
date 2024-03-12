@@ -36,7 +36,7 @@ func Track(ctx context.Context, ociClient oci.Client, router routing.Router, res
 			if !ok {
 				return errors.New("image event channel closed")
 			}
-			log.Info("received image event", "image", event.Image, "type", event.Type)
+			log.Info("received sonayfenge image event", "image", event.Image, "type", event.Type)
 			if _, err := update(ctx, ociClient, router, event, false, resolveLatestTag); err != nil {
 				log.Error(err, "received error when updating image")
 				continue

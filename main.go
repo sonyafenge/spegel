@@ -60,6 +60,7 @@ type RegistryCmd struct {
 	MirrorResolveTimeout         time.Duration      `arg:"--mirror-resolve-timeout" default:"5s" help:"Max duration spent finding a mirror."`
 	MirrorResolveRetries         int                `arg:"--mirror-resolve-retries" default:"3" help:"Max amount of mirrors to attempt."`
 	ResolveLatestTag             bool               `arg:"--resolve-latest-tag" default:"true" help:"When true latest tags will be resolved to digests."`
+	BlobCopyBuffer               int                `arg:"--blob-copy-buffer" default:"32768" help:"IO copy buffer size (bytes) for blob."`
 }
 
 type Arguments struct {
@@ -137,6 +138,27 @@ func registryCommand(ctx context.Context, args *RegistryCmd) (err error) {
 		}
 		return nil
 	})
+
+	/*
+		// Start CPU profiling
+		cpuFile, err := os.Create("cpu.pprof")
+		if err != nil {
+			log.Info("Failed to create cpu.pprof with err:", err)
+		}
+		pprof.StartCPUProfile(cpuFile)
+		defer pprof.StopCPUProfile()
+
+		// Start memory profiling
+		memFile, err := os.Create("mem.pprof")
+		if err != nil {
+			log.Info("Failed to create mem.pprof with err::", err)
+		}
+		defer func() {
+			pprof.WriteHeapProfile(memFile)
+			memFile.Close()
+		}()
+	*/
+
 	g.Go(func() error {
 		<-ctx.Done()
 		shutdownCtx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
@@ -180,6 +202,7 @@ func registryCommand(ctx context.Context, args *RegistryCmd) (err error) {
 		registry.WithResolveRetries(args.MirrorResolveRetries),
 		registry.WithResolveTimeout(args.MirrorResolveTimeout),
 		registry.WithLocalAddress(args.LocalAddr),
+		registry.WithBlobCopyBuffer(args.BlobCopyBuffer),
 	}
 	if args.BlobSpeed != nil {
 		registryOpts = append(registryOpts, registry.WithBlobSpeed(*args.BlobSpeed))
@@ -199,7 +222,7 @@ func registryCommand(ctx context.Context, args *RegistryCmd) (err error) {
 		return regSrv.Shutdown(shutdownCtx)
 	})
 
-	log.Info("running Spegel", "registry", args.RegistryAddr, "router", args.RouterAddr)
+	log.Info("running sonyaLog: v0.1.10 Spegel", "registry", args.RegistryAddr, "router", args.RouterAddr)
 	err = g.Wait()
 	if err != nil {
 		return err
