@@ -324,13 +324,21 @@ func (c *Containerd) CopyLayer(ctx context.Context, dgst digest.Digest, dst io.W
 	// Start a goroutine to perform the copy
 	go func() {
 		startTime := time.Now()
-		_, err := io.Copy(dst, content.NewReader(ra))
+
+		// Use a buffer to improve copy performance
+		//bufferSize := 262144 // Adjust the buffer size as needed (256KB)
+		//bufferSize := 4194304 // Adjust the buffer size as needed (4MB)
+		//bufferSize := 2097152 // Adjust the buffer size as needed (2MB)
+		bufferSize := 67108864 // Adjust the buffer size as needed (64MB)
+		buffer := make([]byte, bufferSize)
+
+		wSize, err := io.CopyBuffer(dst, content.NewReader(ra), buffer)
 		duration := time.Since(startTime)
 
 		if err != nil {
 			sonyalog.Printf("SonyaLog: Blob io.copy failed: %v", err)
 		} else {
-			sonyalog.Printf("SonyaLog: Blob io.copy completed in %s", duration)
+			sonyalog.Printf("SonyaLog: Blob io.copy completed in %s, blob size is %v", duration, wSize)
 		}
 		done <- err // Send the result to the channel
 	}()
